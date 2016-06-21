@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sp_albums">アルバム</string>
+    <string name="sp_tack_photo">カメラ</string>
+    <string name="sp_select_photo">写真を選択</string>
+</resources>

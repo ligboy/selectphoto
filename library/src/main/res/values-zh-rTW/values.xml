@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sp_tack_photo">相機</string>
+    <string name="sp_select_photo">選擇圖片</string>
+    <string name="sp_albums">相冊</string>
+</resources>

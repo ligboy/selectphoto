@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.ligboy.selectphoto">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+
+    <application
+        android:supportsRtl="true"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity android:name="org.ligboy.selectphoto.SelectImageActivity"
+            android:label=""/>
+    </application>
+
+</manifest>

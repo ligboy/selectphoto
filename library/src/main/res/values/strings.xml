@@ -1,0 +1,5 @@
+<resources>
+    <string name="sp_tack_photo">Camera</string>
+    <string name="sp_albums">Albums</string>
+    <string name="sp_select_photo">Select a photo</string>
+</resources>

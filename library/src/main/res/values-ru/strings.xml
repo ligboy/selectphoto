@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sp_albums">Альбомы</string>
+    <string name="sp_select_photo">Выберите фотографию</string>
+    <string name="sp_tack_photo">камера</string>
+</resources>
