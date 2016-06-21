@@ -1,0 +1,69 @@
+apply plugin: 'com.github.dcendents.android-maven'
+apply from: "${rootProject.projectDir}/constants.gradle"
+
+project.archivesBaseName = mavenArtifactId
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.getSrcDirs()
+    classifier "sources"
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+android.libraryVariants.all { variant ->
+    task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
+        source = variant.javaCompile.source
+        classpath = files(variant.javaCompile.classpath.files, project.android.getBootClasspath())
+        options {
+            encoding 'UTF-8'
+        }
+        exclude '**/BuildConfig.java'
+        exclude '**/R.java'
+    }
+
+    task ("javadoc${variant.name.capitalize()}Jar", type: Jar, dependsOn: "generate${variant.name.capitalize()}Javadoc") {
+        classifier = 'javadoc'
+        from tasks.getByName("generate${variant.name.capitalize()}Javadoc").destinationDir
+    }
+
+    artifacts {
+        archives tasks.getByName("javadoc${variant.name.capitalize()}Jar")
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name projectName
+            description projectDesc
+            url githubUrl
+            inceptionYear Calendar.getInstance().get(Calendar.YEAR);
+
+            packaging 'aar'
+            groupId mavenGroup
+            artifactId mavenArtifactId
+            version mavenVersion
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                connection "${githubUrl}.git"
+                url githubUrl
+            }
+            developers {
+                developer {
+                    id 'ligboy'
+                    name 'ligboy'
+                    email 'ligboy@gmail.com'
+                }
+            }
+        }
+    }
+}

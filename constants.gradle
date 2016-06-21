@@ -1,0 +1,15 @@
+ext {
+
+    projectName = 'selectphoto'
+    projectDesc = 'Utils for the facebook stetho.'
+
+    githubUrl = 'https://github.com/ligboy/selectphoto'
+
+    mavenGroup = 'org.ligboy'
+    mavenArtifactId = project.name
+    mavenVersion = '0.1.0'
+
+    bintrayOrg = 'ligboy'
+
+    supportVersion = '23.4.0'
+}

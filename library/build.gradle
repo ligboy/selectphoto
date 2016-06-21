@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 
+check.dependsOn 'checkstyle'
+
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.0"
@@ -17,6 +19,13 @@ android {
         }
     }
 }
+ext {
+    mavenArtifactId = project.name
+}
+
+apply from: "${rootProject.projectDir}/maven.gradle"
+apply from: "${rootProject.projectDir}/bintray.gradle"
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
