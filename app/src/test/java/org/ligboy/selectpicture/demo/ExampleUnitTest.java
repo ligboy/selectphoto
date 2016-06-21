@@ -1,4 +1,4 @@
-package org.ligboy.selectphoto.demo;
+package org.ligboy.selectpicture.demo;
 
 import org.junit.Test;
 

@@ -24,5 +24,6 @@
         android:layout_alignBottom="@id/photo"
         android:gravity="center"
         android:textSize="32sp"
-        android:text="This is a title "/>
+        android:text="This is a title "
+        tools:ignore="HardcodedText" />
 </android.support.percent.PercentRelativeLayout>
