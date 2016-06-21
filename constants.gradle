@@ -1,12 +1,12 @@
 ext {
 
-    projectName = 'selectphoto'
+    projectName = 'select-photo'
     projectDesc = 'Utils for the facebook stetho.'
 
     githubUrl = 'https://github.com/ligboy/selectphoto'
 
-    mavenGroup = 'org.ligboy'
-    mavenArtifactId = project.name
+    mavenGroup = 'org.ligboy.android'
+    mavenArtifactId = "selectphoto"
     mavenVersion = '0.1.0'
 
     bintrayOrg = 'ligboy'

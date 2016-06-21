@@ -19,9 +19,6 @@ android {
         }
     }
 }
-ext {
-    mavenArtifactId = project.name
-}
 
 apply from: "${rootProject.projectDir}/maven.gradle"
 apply from: "${rootProject.projectDir}/bintray.gradle"
