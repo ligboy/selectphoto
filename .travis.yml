@@ -20,8 +20,9 @@ deploy:
     secure: iQgPy4g3g1Lx1dRg22YZtfRGE5GZ+jV0I+kZYaYWzVYH4ZIb8vhy1oZsL+naMKkA+AaBUXU39P5nyj2D39kt4t+rfy6U21ChW8mhop9qOY5HHxNsGqL7VBTAjM24a8+RlrbbWJuk4d7VjrC61m8ybPjNUGYMJsDJgYFrNgoOayCbO6lDwp7XchTtc1PC3GMGNeYg51tTfM22HYIMwuUuGsHjAuGGBNvNjWrvhU/rJ+qRxx+x6VZaFxZaCZAhOtRg2trKFYqTrvhBH8Z5+9IY2B66m7W2/ka7UVG81VXWpY85q0mDDysudPoko30YsOyu2iHhcBFLrdNNzAmsAmgMxlJezSSO8lAjP+Nz+NvhZnThxO5SIeR9gvH5OZbGa0ifag6W6VL0b5/4/bjj13D5fsiHkFQ+knY5zvpGp5oHYWfBc+HRyZqO7GSsIdvgCNlvv0sBfhw84nbpfjDo1RWYncDAF2/JMCaTaWn1oc+IugntU+lJNZzsrW32peo93KDWe86g7J0SvByPLphxzKb5g/kQRxZEl5fQ/ZE0129XWOWg/Ppde0YQ+gXMejvdGpLZbXkzAbPK/kSg5/Pkb3gJQprqgT9Bf4wK/EOoJcChVCBvMml/RN7q9PcOzwRQxbJsWRn+43/5ASFQeXAW5tKAAUW7r7Mku06/CQ2S2+/f99Q=
   file_glob: true
   file: "*/build/outputs/aar/*-release.aar"
+  skip_cleanup: true
   on:
-    repo: ligboy/selectphoto
+    tags: true
 after_deploy:
 - "./gradlew library:bintrayUpload"
 branches:
