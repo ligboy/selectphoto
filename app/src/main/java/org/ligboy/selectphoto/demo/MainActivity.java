@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 SelectImageActivity.builder()
                         .setTitle("Select a photo")
                         .asSquare()
+                        .withCrop(true)
                         .start(MainActivity.this);
                 break;
         }

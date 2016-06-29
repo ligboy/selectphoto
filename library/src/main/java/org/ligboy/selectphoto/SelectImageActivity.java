@@ -17,7 +17,6 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 
@@ -61,11 +60,8 @@ public class SelectImageActivity extends AppCompatActivity
     private static final String SAVE_IMAGE_TYPE = "image_type";
     private static final String SAVE_CROP = "crop";
 
-    private static final String TAG = "SelectImage";
-
     private static final int REQUEST_CODE_IMAGE_CAPTURE = 1675;
     private static final String CACHE_DIR = "_crop";
-    private static final String AUTHORITIES_KEY = "org.ligboy.selectphoto.authorities";
 
     private Uri mCaptureUri;
     private String mTitle;
@@ -82,11 +78,10 @@ public class SelectImageActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        mAuthorities = ContextUtil.getApplicationMetaDate(this, AUTHORITIES_KEY);
         mAuthorities = getString(R.string.sp_provider_authorities);
 
         if (TextUtils.isEmpty(mAuthorities)) {
-            throw new Error("application metadata:" + AUTHORITIES_KEY + " must be setting.");
+            throw new Error("@string/sp_provider_authorities must be override.");
         }
 
         getTheme().applyStyle(R.style.SelectImageTransparent, true);
@@ -160,8 +155,7 @@ public class SelectImageActivity extends AppCompatActivity
                         startActivityForResult(intent, REQUEST_CODE_IMAGE_CAPTURE);
                     }
                 } else {
-                    setResult(RESULT_ERROR);
-                    finish();
+                    setError();
                     return;
                 }
                 break;
@@ -197,45 +191,39 @@ public class SelectImageActivity extends AppCompatActivity
             switch (requestCode) {
                 case Crop.REQUEST_PICK:
                     if (data.getData() != null) {
-                        int uriPermission = checkCallingUriPermission(data.getData(),
-                                Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        Log.d(TAG, "uriPermission: " + uriPermission);
-//                        ContentResolver contentResolver = getContentResolver();
-//                        contentResolver.getPersistedUriPermissions();
                         try {
                             mImageType = ImageTypeUtil.detectType(this, data.getData());
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        } catch (IOException ignored) {
                         }
-                        File file1 = ContextUtil.createTempFile(this, "photo", ".jpg", CACHE_DIR);
-                        if (file1 != null) {
-                            crop(data.getData(), file1);
+                        if (mCrop) {
+                            crop(data.getData());
+                        } else {
+                            setSuccess(data.getData());
                         }
                         return;
                     }
                     break;
                 case REQUEST_CODE_IMAGE_CAPTURE:
                     if (mCaptureUri != null) {
-                        File file2 = ContextUtil.createTempFile(this, "photo", ".jpg", CACHE_DIR);
-                        if (file2 != null) {
-                            crop(mCaptureUri, file2);
+                        try {
+                            mImageType = ImageTypeUtil.detectType(this, mCaptureUri);
+                        } catch (IOException ignored) {
+                        }
+
+                        if (mCrop) {
+                            crop(mCaptureUri);
+                        } else {
+                            setSuccess(mCaptureUri);
                         }
                         return;
                     }
                     break;
                 case Crop.REQUEST_CROP:
                     Uri output = data.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-//                    mImageType = ImageTypeUtil.detectType(this, output);
-                    Intent intent = new Intent();
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, output);
-                    intent.putExtra(EXTRA_IMAGE_TYPE, ImageTypeUtil.TYPE_JPG);
-                    intent.setData(output);
-                    setResult(Activity.RESULT_OK, intent);
-                    finish();
+                    setSuccess(output, ImageTypeUtil.TYPE_JPG);
                     return;
             }
-            setResult(RESULT_ERROR);
-            finish();
+            setError();
         } else if (resultCode == Activity.RESULT_CANCELED) {
             setResult(RESULT_CANCELED);
             finish();
@@ -249,7 +237,26 @@ public class SelectImageActivity extends AppCompatActivity
         }
     }
 
-    private void crop(Uri uri, File file) {
+    private void setError() {
+        setResult(RESULT_ERROR);
+        finish();
+    }
+
+    private void setSuccess(Uri output) {
+        setSuccess(output, mImageType);
+    }
+
+    private void setSuccess(Uri output, String type) {
+        Intent intent = new Intent();
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, output);
+        intent.putExtra(EXTRA_IMAGE_TYPE, type);
+        intent.setData(output);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
+
+    private void crop(Uri uri) {
+        File file = ContextUtil.createTempFile(this, "photo", ".jpg", CACHE_DIR);
         Crop crop = Crop.of(uri, Uri.fromFile(file));
         if (mAspectX > 0 && mAspectY > 0) {
             crop.withAspect(mAspectX, mAspectY);
@@ -344,6 +351,16 @@ public class SelectImageActivity extends AppCompatActivity
         public Builder withMaxSize(int width, int height) {
             mIntent.putExtra(EXTRA_MAX_X, width);
             mIntent.putExtra(EXTRA_MAX_Y, height);
+            return this;
+        }
+
+        /**
+         * Set enable/disable crop function.
+         * <p>
+         * @param enable Is enable the Crop function. Default false.
+         */
+        public Builder withCrop(boolean enable) {
+            mIntent.putExtra(EXTRA_CROP, enable);
             return this;
         }
 
