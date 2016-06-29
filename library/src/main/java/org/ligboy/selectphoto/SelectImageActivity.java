@@ -148,12 +148,13 @@ public class SelectImageActivity extends AppCompatActivity
                 File file = ContextUtil.createTempFile(this, "image-capture-", null, CACHE_DIR);
                 if (file != null && file.canWrite()) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mCaptureUri);
 
                     mCaptureUri = FileProvider.getUriForFile(this, mAuthorities, file);
                     ContextUtil.grantUriPermissionToIntent(this, intent, mCaptureUri);
+
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mCaptureUri);
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
                     if (intent.resolveActivity(getPackageManager()) != null) {
                         startActivityForResult(intent, REQUEST_CODE_IMAGE_CAPTURE);
