@@ -7,9 +7,9 @@ ext {
 
     mavenGroup = 'org.ligboy.android'
     mavenArtifactId = "selectphoto"
-    mavenVersion = '0.1.0'
+    mavenVersion = '0.2.0'
 
     bintrayOrg = 'ligboy'
 
-    supportVersion = '23.4.0'
+    supportVersion = '24.0.0'
 }
