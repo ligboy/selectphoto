@@ -5,36 +5,34 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 
 import com.soundcloud.android.crop.Crop;
 
 import java.io.File;
+import java.io.IOException;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 /**
  * SelectImageActivity
  */
 public class SelectImageActivity extends AppCompatActivity
         implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
-    private static final String SAVE_CAPTURE_URI = "capture_uri";
-    private static final String SAVE_TITLE = "title";
-    private static final String SAVE_ASPECT_X = "aspect_x";
-    private static final String SAVE_ASPECT_Y = "aspect_y";
-    private static final String SAVE_MAX_X = "max_x";
-    private static final String SAVE_MAX_Y = "max_y";
-    private static final String SAVE_IMAGE_TYPE = "image_type";
-
-    private static final int REQUEST_CODE_IMAGE_CAPTURE = 1675;
 
     public static final int REQUEST_CODE_SELECT_IMAGE = 1435;
     public static final int RESULT_ERROR = 404;
@@ -48,11 +46,26 @@ public class SelectImageActivity extends AppCompatActivity
     public static final String EXTRA_ASPECT_Y = "aspect_y";
     public static final String EXTRA_MAX_X = "max_x";
     public static final String EXTRA_MAX_Y = "max_y";
-
+    public static final String EXTRA_CROP = "crop";
     /**
      * The file suffix type of image.
      */
     public static final String EXTRA_IMAGE_TYPE = "image_type";
+
+    private static final String SAVE_CAPTURE_URI = "capture_uri";
+    private static final String SAVE_TITLE = "title";
+    private static final String SAVE_ASPECT_X = "aspect_x";
+    private static final String SAVE_ASPECT_Y = "aspect_y";
+    private static final String SAVE_MAX_X = "max_x";
+    private static final String SAVE_MAX_Y = "max_y";
+    private static final String SAVE_IMAGE_TYPE = "image_type";
+    private static final String SAVE_CROP = "crop";
+
+    private static final String TAG = "SelectImage";
+
+    private static final int REQUEST_CODE_IMAGE_CAPTURE = 1675;
+    private static final String CACHE_DIR = "_crop";
+    private static final String AUTHORITIES_KEY = "org.ligboy.selectphoto.authorities";
 
     private Uri mCaptureUri;
     private String mTitle;
@@ -60,19 +73,29 @@ public class SelectImageActivity extends AppCompatActivity
     private int mAspectY;
     private int mMaxX;
     private int mMaxY;
-    private String mImageType = ImageUtil.TYPE_UNKNOWN;
+    private String mImageType = ImageTypeUtil.TYPE_UNKNOWN;
+    private boolean mCrop;
+
+    private String mAuthorities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        mAuthorities = ContextUtil.getApplicationMetaDate(this, AUTHORITIES_KEY);
+        mAuthorities = getString(R.string.sp_provider_authorities);
+
+        if (TextUtils.isEmpty(mAuthorities)) {
+            throw new Error("application metadata:" + AUTHORITIES_KEY + " must be setting.");
+        }
+
         getTheme().applyStyle(R.style.SelectImageTransparent, true);
+
         Window window = getWindow();
-//        window.addFlags(Window.FEATURE_NO_TITLE);
-//        window.requestFeature(Window.FEATURE_NO_TITLE);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.getDecorView().setBackgroundColor(Color.TRANSPARENT);
         window.getDecorView().setWillNotDraw(true);
-//        window.getDecorView().setVisibility(View.INVISIBLE);
+
         if (savedInstanceState != null) {
             mCaptureUri = savedInstanceState.getParcelable(SAVE_CAPTURE_URI);
             mTitle = savedInstanceState.getString(SAVE_TITLE);
@@ -80,6 +103,7 @@ public class SelectImageActivity extends AppCompatActivity
             mAspectY = savedInstanceState.getInt(SAVE_ASPECT_Y);
             mMaxX = savedInstanceState.getInt(SAVE_MAX_X);
             mMaxY = savedInstanceState.getInt(SAVE_MAX_Y);
+            mCrop = savedInstanceState.getBoolean(SAVE_CROP, false);
         } else {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
@@ -88,12 +112,15 @@ public class SelectImageActivity extends AppCompatActivity
                 mAspectY = extras.getInt(EXTRA_ASPECT_Y);
                 mMaxX = extras.getInt(EXTRA_MAX_X);
                 mMaxY = extras.getInt(EXTRA_MAX_Y);
-                mImageType = extras.getString(SAVE_IMAGE_TYPE);
+                mImageType = extras.getString(EXTRA_IMAGE_TYPE);
+                mImageType = extras.getString(EXTRA_CROP);
                 if (mImageType == null) {
-                    mImageType = ImageUtil.TYPE_UNKNOWN;
+                    mImageType = ImageTypeUtil.TYPE_UNKNOWN;
                 }
+                mCrop = extras.getBoolean(EXTRA_CROP, false);
             }
         }
+
         String[] strings = new String[]{getString(R.string.sp_tack_photo), getString(R.string.sp_albums)};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 R.layout.sp_list_item_choose_image, strings);
@@ -118,12 +145,19 @@ public class SelectImageActivity extends AppCompatActivity
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case 0:
-                File file = ContextUtil.createTempFile(this, "image-capture-", null, "_crop");
+                File file = ContextUtil.createTempFile(this, "image-capture-", null, CACHE_DIR);
                 if (file != null && file.canWrite()) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    mCaptureUri = Uri.fromFile(file);
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mCaptureUri);
-                    startActivityForResult(intent, REQUEST_CODE_IMAGE_CAPTURE);
+
+                    mCaptureUri = FileProvider.getUriForFile(this, mAuthorities, file);
+                    ContextUtil.grantUriPermissionToIntent(this, intent, mCaptureUri);
+
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivityForResult(intent, REQUEST_CODE_IMAGE_CAPTURE);
+                    }
                 } else {
                     setResult(RESULT_ERROR);
                     finish();
@@ -131,7 +165,7 @@ public class SelectImageActivity extends AppCompatActivity
                 }
                 break;
             case 1:
-                Crop.pickImage(this);
+                pickImage();
                 break;
         }
         dialog.dismiss();
@@ -153,6 +187,7 @@ public class SelectImageActivity extends AppCompatActivity
         outState.putInt(SAVE_MAX_X, mMaxX);
         outState.putInt(SAVE_MAX_Y, mMaxY);
         outState.putString(SAVE_IMAGE_TYPE, mImageType);
+        outState.putBoolean(SAVE_CROP, mCrop);
     }
 
     @Override
@@ -161,8 +196,17 @@ public class SelectImageActivity extends AppCompatActivity
             switch (requestCode) {
                 case Crop.REQUEST_PICK:
                     if (data.getData() != null) {
-                        mImageType = ImageUtil.detectType(this, data.getData());
-                        File file1 = ContextUtil.createTempFile(this, "photo", ".jpg", "_crop");
+                        int uriPermission = checkCallingUriPermission(data.getData(),
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        Log.d(TAG, "uriPermission: " + uriPermission);
+//                        ContentResolver contentResolver = getContentResolver();
+//                        contentResolver.getPersistedUriPermissions();
+                        try {
+                            mImageType = ImageTypeUtil.detectType(this, data.getData());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        File file1 = ContextUtil.createTempFile(this, "photo", ".jpg", CACHE_DIR);
                         if (file1 != null) {
                             crop(data.getData(), file1);
                         }
@@ -171,7 +215,7 @@ public class SelectImageActivity extends AppCompatActivity
                     break;
                 case REQUEST_CODE_IMAGE_CAPTURE:
                     if (mCaptureUri != null) {
-                        File file2 = ContextUtil.createTempFile(this, "photo", ".jpg", "_crop");
+                        File file2 = ContextUtil.createTempFile(this, "photo", ".jpg", CACHE_DIR);
                         if (file2 != null) {
                             crop(mCaptureUri, file2);
                         }
@@ -180,10 +224,10 @@ public class SelectImageActivity extends AppCompatActivity
                     break;
                 case Crop.REQUEST_CROP:
                     Uri output = data.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-//                    mImageType = ImageUtil.detectType(this, output);
+//                    mImageType = ImageTypeUtil.detectType(this, output);
                     Intent intent = new Intent();
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, output);
-                    intent.putExtra(EXTRA_IMAGE_TYPE, ImageUtil.TYPE_JPG);
+                    intent.putExtra(EXTRA_IMAGE_TYPE, ImageTypeUtil.TYPE_JPG);
                     intent.setData(output);
                     setResult(Activity.RESULT_OK, intent);
                     finish();
@@ -215,6 +259,22 @@ public class SelectImageActivity extends AppCompatActivity
             crop.withMaxSize(mMaxX, mMaxY);
         }
         crop.start(this);
+    }
+
+    private void pickImage() {
+        Intent intent;
+        //if version >= KITKAT && has NO read external storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                && ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        } else {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        }
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        Intent i = Intent.createChooser(intent, null);
+        startActivityForResult(i, Crop.REQUEST_PICK);
     }
 
     /**

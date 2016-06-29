@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
+    <!--<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
 
     <application
         android:supportsRtl="true"
@@ -11,6 +12,16 @@
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
         <activity android:name="org.ligboy.selectphoto.SelectImageActivity"
             android:label=""/>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="@string/sp_provider_authorities"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/sp_share_file_paths" />
+        </provider>
+
     </application>
 
 </manifest>

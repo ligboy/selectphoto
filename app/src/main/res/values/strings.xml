@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SelectPicture</string>
+    <string name="sp_provider_authorities" translatable="false">org.ligboy.selectphoto.demo.sp.provider</string>
 </resources>

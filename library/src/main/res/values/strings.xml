@@ -2,4 +2,8 @@
     <string name="sp_tack_photo">Camera</string>
     <string name="sp_albums">Albums</string>
     <string name="sp_select_photo">Select a photo</string>
+
+    <!-- Authority names should use a Java-style naming convention -->
+    <!-- (such as com.google.provider.MyProvider) in order to avoid conflicts. !-->
+    <string name="sp_provider_authorities" formatted="false" translatable="false"></string>
 </resources>

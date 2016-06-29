@@ -22,6 +22,8 @@
         </activity>
         <activity android:name="org.ligboy.selectphoto.SelectImageActivity"
             android:theme="@style/AppTheme.Transparent"/>
+        <meta-data android:name="org.ligboy.selectphoto.authorities"
+            android:value="org.ligboy.selectphoto.demo.sp.provider" />
     </application>
 
 </manifest>
