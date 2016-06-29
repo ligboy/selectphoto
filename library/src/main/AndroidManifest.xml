@@ -13,7 +13,7 @@
         <activity android:name="org.ligboy.selectphoto.SelectImageActivity"
             android:label=""/>
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="org.ligboy.selectphoto.SpFileProvider"
             android:authorities="@string/sp_provider_authorities"
             android:exported="false"
             android:grantUriPermissions="true">
