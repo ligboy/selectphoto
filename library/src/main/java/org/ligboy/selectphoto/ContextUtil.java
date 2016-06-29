@@ -34,10 +34,10 @@ final class ContextUtil {
         File outputDir = null;
         File externalCacheDir = context.getExternalCacheDir();
         //判断是否具有WRITE_EXTERNAL_STORAGE 权限
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+        if (externalCacheDir != null && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
                 || context.checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED)
-                && externalCacheDir != null && externalCacheDir.exists()) {
+                && externalCacheDir.canWrite()) {
             cacheDerectory = externalCacheDir;
         } else {
             cacheDerectory = context.getCacheDir();
