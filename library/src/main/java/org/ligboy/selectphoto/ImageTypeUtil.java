@@ -46,14 +46,10 @@ public final class ImageTypeUtil {
     public static String detectType(@NonNull Context context, @NonNull Uri uri) throws IOException {
         InputStream inputStream = null;
         inputStream = context.getContentResolver().openInputStream(uri);
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException ignored) {
-            }
-        }
         //noinspection ConstantConditions
-        return detectType(inputStream);
+        String type = detectType(inputStream);
+        inputStream.close();
+        return type;
     }
 
     /**
