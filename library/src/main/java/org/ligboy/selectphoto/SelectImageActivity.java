@@ -583,7 +583,7 @@ public class SelectImageActivity extends AppCompatActivity
          * the title of the {@link CropImageActivity}.<br>
          * <i>Default: ""</i>
          */
-        public Builder setActivityTitle(String activityTitle) {
+        public Builder setCropTitle(String activityTitle) {
             mOptions.activityTitle = activityTitle;
             return this;
         }
@@ -592,7 +592,7 @@ public class SelectImageActivity extends AppCompatActivity
          * the color to use for action bar items icons.<br>
          * <i>Default: NONE</i>
          */
-        public Builder setActivityMenuIconColor(int activityMenuIconColor) {
+        public Builder setCropMenuIconColor(int activityMenuIconColor) {
             mOptions.activityMenuIconColor = activityMenuIconColor;
             return this;
         }
@@ -625,16 +625,6 @@ public class SelectImageActivity extends AppCompatActivity
         public Builder setRequestedSize(int reqWidth, int reqHeight) {
             mOptions.outputRequestWidth = reqWidth;
             mOptions.outputRequestHeight = reqHeight;
-            return this;
-        }
-
-        /**
-         * if the result of crop image activity should not save the cropped image bitmap.<br>
-         * Used if you want to crop the image manually and need only the crop rectangle and rotati
-         * on data.<br> <i>Default: false</i>
-         */
-        public Builder setNoOutputImage(boolean noOutputImage) {
-            mOptions.noOutputImage = noOutputImage;
             return this;
         }
 
