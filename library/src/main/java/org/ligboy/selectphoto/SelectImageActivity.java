@@ -68,7 +68,7 @@ public class SelectImageActivity extends AppCompatActivity
     private String mTitle;
     private CropImageOptions mOptions;
     private String mImageType = ImageTypeUtil.TYPE_UNKNOWN;
-    private boolean mCrop;
+    private boolean mCrop = true;
 
     private String mAuthorities;
 
@@ -91,13 +91,13 @@ public class SelectImageActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             mCaptureUri = savedInstanceState.getParcelable(SAVE_CAPTURE_URI);
             mTitle = savedInstanceState.getString(SAVE_TITLE);
-            mCrop = savedInstanceState.getBoolean(SAVE_CROP, false);
+            mCrop = savedInstanceState.getBoolean(SAVE_CROP, true);
             mOptions = savedInstanceState.getParcelable(SAVE_CROP_OPTIONS);
         } else {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
                 mTitle = extras.getString(EXTRA_TITLE);
-                mCrop = extras.getBoolean(EXTRA_CROP, false);
+                mCrop = extras.getBoolean(EXTRA_CROP, true);
                 mOptions = extras.getParcelable(EXTRA_CROP_OPTIONS);
             }
         }
@@ -350,7 +350,7 @@ public class SelectImageActivity extends AppCompatActivity
         /**
          * Set enable/disable crop function.
          * <p>
-         * @param enable Is enable the Crop function. Default false.
+         * @param enable Is enable the Crop function. Default true.
          */
         public Builder withCrop(boolean enable) {
             mIntent.putExtra(EXTRA_CROP, enable);
