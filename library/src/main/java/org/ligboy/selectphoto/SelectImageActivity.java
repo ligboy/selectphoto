@@ -107,11 +107,6 @@ public class SelectImageActivity extends AppCompatActivity
                 mAspectY = extras.getInt(EXTRA_ASPECT_Y);
                 mMaxX = extras.getInt(EXTRA_MAX_X);
                 mMaxY = extras.getInt(EXTRA_MAX_Y);
-                mImageType = extras.getString(EXTRA_IMAGE_TYPE);
-                mImageType = extras.getString(EXTRA_CROP);
-                if (mImageType == null) {
-                    mImageType = ImageTypeUtil.TYPE_UNKNOWN;
-                }
                 mCrop = extras.getBoolean(EXTRA_CROP, false);
             }
         }
