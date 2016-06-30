@@ -2,4 +2,9 @@
     <string name="sp_tack_photo">相机</string>
     <string name="sp_select_photo">选择图片</string>
     <string name="sp_albums">相册</string>
+    <string name="pick_image_intent_chooser_title">选择文件</string>
+    <string name="crop_image_menu_rotate_right">旋转</string>
+    <string name="crop_image_menu_rotate_left">逆时针旋转</string>
+    <string name="crop_image_menu_crop">裁剪</string>
+    <string name="crop_image_activity_title">裁剪图片</string>
 </resources>

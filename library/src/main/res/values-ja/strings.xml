@@ -3,4 +3,9 @@
     <string name="sp_albums">アルバム</string>
     <string name="sp_tack_photo">カメラ</string>
     <string name="sp_select_photo">写真を選択</string>
+    <string name="crop_image_activity_title">画像をトリミングします</string>
+    <string name="crop_image_menu_crop">切り取ります</string>
+    <string name="crop_image_menu_rotate_left">反時計方向に回転します</string>
+    <string name="crop_image_menu_rotate_right">ローテート</string>
+    <string name="pick_image_intent_chooser_title">ファイル</string>
 </resources>

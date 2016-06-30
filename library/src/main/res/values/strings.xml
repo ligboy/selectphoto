@@ -1,7 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="sp_tack_photo">Camera</string>
     <string name="sp_albums">Albums</string>
     <string name="sp_select_photo">Select a photo</string>
+
+    <string name="crop_image_activity_title">Crop picture</string>
+    <string name="crop_image_menu_rotate_left">Rotate counter clockwise</string>
+    <string name="crop_image_menu_rotate_right">Rotate</string>
+    <string name="crop_image_menu_crop">Crop</string>
+    <string name="pick_image_intent_chooser_title">Select source</string>
 
     <!-- Authority names should use a Java-style naming convention -->
     <!-- (such as com.google.provider.MyProvider) in order to avoid conflicts. !-->

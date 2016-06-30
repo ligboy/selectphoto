@@ -3,4 +3,9 @@
     <string name="sp_albums">álbumes</string>
     <string name="sp_select_photo">Seleccione una foto</string>
     <string name="sp_tack_photo">Cámara</string>
+    <string name="pick_image_intent_chooser_title">Seleccione archivo</string>
+    <string name="crop_image_activity_title">Recortar foto</string>
+    <string name="crop_image_menu_crop">Cultivo</string>
+    <string name="crop_image_menu_rotate_left">Girar en sentido antihorario</string>
+    <string name="crop_image_menu_rotate_right">Girar</string>
 </resources>

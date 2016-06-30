@@ -14,12 +14,13 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
-    <style name="CropActionButtonTextCancel" parent="Crop.ActionButtonText.Cancel">
+    <!--parent="Crop.ActionButtonText.Cancel"-->
+    <style name="CropActionButtonTextCancel" >
         <item name="android:textColor">@color/sp_crop_button_text</item>
         <item name="android:drawableLeft">@drawable/sp_ic_close_grey_24dp</item>
     </style>
-
-    <style name="CropActionButtonTextDone" parent="Crop.ActionButtonText.Done">
+    <!--parent="Crop.ActionButtonText.Done"-->
+    <style name="CropActionButtonTextDone">
         <item name="android:textColor">@color/sp_crop_button_text</item>
         <item name="android:drawableLeft">@drawable/sp_ic_done_grey_24dp</item>
     </style>

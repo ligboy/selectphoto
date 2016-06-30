@@ -3,4 +3,9 @@
     <string name="sp_albums">Альбомы</string>
     <string name="sp_select_photo">Выберите фотографию</string>
     <string name="sp_tack_photo">камера</string>
+    <string name="crop_image_activity_title">Кадрирование снимка</string>
+    <string name="crop_image_menu_rotate_left">Вращать против часовой стрелки</string>
+    <string name="crop_image_menu_rotate_right">Поворот</string>
+    <string name="crop_image_menu_crop">Вырежьте</string>
+    <string name="pick_image_intent_chooser_title">Выберите Файл</string>
 </resources>
