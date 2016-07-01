@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -30,6 +31,8 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
@@ -282,6 +285,62 @@ public class SelectImageActivity extends AppCompatActivity
         return new Builder();
     }
 
+    public static final int CROP_SHAPE_RECTANGLE = 0;
+    public static final int CROP_SHAPE_OVAL = 1;
+    @IntDef({CROP_SHAPE_RECTANGLE, CROP_SHAPE_OVAL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CropShapeTypes {}
+
+    /**
+     * Never show
+     */
+    public static final int GUIDELINES_OFF = 0;
+    /**
+     * Show when crop move action is live
+     */
+    public static final int GUIDELINES_ON_TOUCH = 1;
+    /**
+     * Always show
+     */
+    public static final int GUIDELINES_ON = 2;
+    @IntDef({GUIDELINES_OFF, GUIDELINES_ON_TOUCH, GUIDELINES_ON})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Guidelines {}
+
+    /**
+     * Scale the image uniformly (maintain the image's aspect ratio) to fit in crop image view.<br>
+     * The largest dimension will be equals to crop image viee and the second dimension will be
+     * smaller.
+     */
+    public static final int SCALE_TYPE_FIT_CENTER = 0;
+    /**
+     * Center the image in the view, but perform no scaling.<br>
+     * Note: If auto-zoom is enabled and the source image is smaller than crop image view then
+     * it will be
+     * scaled uniformly to fit the crop image view.
+     */
+    public static final int SCALE_TYPE_CENTER = 1;
+    /**
+     * Scale the image uniformly (maintain the image's aspect ratio) so that both
+     * dimensions (width and height) of the image will be equal to or <b>larger</b> than the
+     * corresponding dimension of the view (minus padding).<br>
+     * The image is then centered in the view.
+     */
+    public static final int SCALE_TYPE_CENTER_CROP = 2;
+    /**
+     * Scale the image uniformly (maintain the image's aspect ratio) so that both
+     * dimensions (width and height) of the image will be equal to or <b>less</b> than the
+     * corresponding dimension of the view (minus padding).<br>
+     * The image is then centered in the view.<br>
+     * Note: If auto-zoom is enabled and the source image is smaller than crop image view then
+     * it will be scaled uniformly to fit the crop image view.
+     */
+    public static final int SCALE_TYPE_CENTER_INSIDE = 3;
+    @IntDef({SCALE_TYPE_FIT_CENTER, SCALE_TYPE_CENTER,
+            SCALE_TYPE_CENTER_CROP, SCALE_TYPE_CENTER_INSIDE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ScaleTypes {}
+
     /**
      * Create a builder for SelectImageActivity with a intent.
      * @param intent Intent which will be merged.
@@ -343,7 +402,7 @@ public class SelectImageActivity extends AppCompatActivity
          * @param height Max height
          */
         public Builder withMaxSize(int width, int height) {
-            setMaxCropResultSize(width, height);
+            setRequestedSize(width, height);
             return this;
         }
 
@@ -357,14 +416,19 @@ public class SelectImageActivity extends AppCompatActivity
             return this;
         }
 
-
-
         /**
          * The shape of the cropping window.<br>
          * <i>Default: RECTANGLE</i>
          */
-        public Builder setCropShape(@NonNull CropImageView.CropShape cropShape) {
-            mOptions.cropShape = cropShape;
+        public Builder setCropShape(@CropShapeTypes int type) {
+            switch (type) {
+                case CROP_SHAPE_RECTANGLE:
+                    mOptions.cropShape = CropImageView.CropShape.RECTANGLE;
+                    break;
+                case CROP_SHAPE_OVAL:
+                    mOptions.cropShape = CropImageView.CropShape.OVAL;
+                    break;
+            }
             return this;
         }
 
@@ -392,19 +456,42 @@ public class SelectImageActivity extends AppCompatActivity
 
         /**
          * whether the guidelines should be on, off, or only showing when resizing.<br>
-         * <i>Default: ON_TOUCH</i>
+         * <i>Default: {@link #GUIDELINES_ON_TOUCH}</i>
          */
-        public Builder setGuidelines(@NonNull CropImageView.Guidelines guidelines) {
-            mOptions.guidelines = guidelines;
+        public Builder setGuidelines(@Guidelines int guidelines) {
+            switch (guidelines) {
+                case GUIDELINES_OFF:
+                    mOptions.guidelines = CropImageView.Guidelines.OFF;
+                    break;
+                case GUIDELINES_ON:
+                    mOptions.guidelines = CropImageView.Guidelines.ON;
+                    break;
+                case GUIDELINES_ON_TOUCH:
+                    mOptions.guidelines = CropImageView.Guidelines.ON_TOUCH;
+                    break;
+            }
             return this;
         }
 
         /**
          * The initial scale type of the image in the crop image view<br>
-         * <i>Default: FIT_CENTER</i>
+         * <i>Default: {@link #SCALE_TYPE_FIT_CENTER}</i>
          */
-        public Builder setScaleType(@NonNull CropImageView.ScaleType scaleType) {
-            mOptions.scaleType = scaleType;
+        public Builder setScaleType(@ScaleTypes int scaleType) {
+            switch (scaleType) {
+                case SCALE_TYPE_CENTER:
+                    mOptions.scaleType = CropImageView.ScaleType.CENTER;
+                    break;
+                case SCALE_TYPE_CENTER_CROP:
+                    mOptions.scaleType = CropImageView.ScaleType.CENTER_CROP;
+                    break;
+                case SCALE_TYPE_CENTER_INSIDE:
+                    mOptions.scaleType = CropImageView.ScaleType.CENTER_INSIDE;
+                    break;
+                case SCALE_TYPE_FIT_CENTER:
+                    mOptions.scaleType = CropImageView.ScaleType.FIT_CENTER;
+                    break;
+            }
             return this;
         }
 

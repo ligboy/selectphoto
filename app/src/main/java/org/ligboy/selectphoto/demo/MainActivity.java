@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setTitle("Select a photo")
                         .asSquare()
                         .setFixAspectRatio(true)
+                        .withMaxSize(1024, 1024)
                         .withCrop(true)
                         .start(MainActivity.this);
                 break;
