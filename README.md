@@ -7,7 +7,7 @@ Select a photo activity for android by stock camera or photos
 This library already included in JCenter & MavenCentral
 #### Gradle:
 ```groovy
-compile 'org.ligboy.android:selectphoto:1.1.0'
+compile 'org.ligboy.android:selectphoto:1.1.1'
 ```
 
 ### Usage
