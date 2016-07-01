@@ -14,14 +14,4 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
-    <!--parent="Crop.ActionButtonText.Cancel"-->
-    <style name="CropActionButtonTextCancel" >
-        <item name="android:textColor">@color/sp_crop_button_text</item>
-        <item name="android:drawableLeft">@drawable/sp_ic_close_grey_24dp</item>
-    </style>
-    <!--parent="Crop.ActionButtonText.Done"-->
-    <style name="CropActionButtonTextDone">
-        <item name="android:textColor">@color/sp_crop_button_text</item>
-        <item name="android:drawableLeft">@drawable/sp_ic_done_grey_24dp</item>
-    </style>
 </resources>

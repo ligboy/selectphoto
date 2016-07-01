@@ -9,7 +9,7 @@
     <application
         android:supportsRtl="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"/>
+        <activity android:name="org.ligboy.selectphoto.CropImageActivity" />
         <activity android:name="org.ligboy.selectphoto.SelectImageActivity"
             android:label=""/>
         <provider

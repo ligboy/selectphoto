@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -25,7 +26,6 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageActivity;
 import com.theartofdev.edmodo.cropper.CropImageOptions;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -33,13 +33,14 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 /**
  * SelectImageActivity
  */
-public class SelectImageActivity extends AppCompatActivity
+public final class SelectImageActivity extends AppCompatActivity
         implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
 
     public static final int REQUEST_CODE_SELECT_IMAGE = 1435;
@@ -155,6 +156,7 @@ public class SelectImageActivity extends AppCompatActivity
         outState.putString(SAVE_TITLE, mTitle);
         outState.putString(SAVE_IMAGE_TYPE, mImageType);
         outState.putBoolean(SAVE_CROP, mCrop);
+        outState.putParcelable(SAVE_CROP_OPTIONS, mOptions);
     }
 
     @Override
@@ -191,20 +193,24 @@ public class SelectImageActivity extends AppCompatActivity
                     }
                     break;
                 case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                    setSuccess(result.getUri(), ImageTypeUtil.TYPE_JPG);
-                    return;
+                    ActivityResult result = ActivityResult.get(data);
+                    if (result != null) {
+                        setSuccess(result.getUri(), ImageTypeUtil.TYPE_JPG);
+                        return;
+                    }
+                    break;
             }
             setError();
         } else if (resultCode == Activity.RESULT_CANCELED) {
             setResult(RESULT_CANCELED);
             finish();
         } else if (CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE == resultCode){
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-
+            ActivityResult result = ActivityResult.get(data);
             Intent intent = new Intent();
-            //noinspection ThrowableResultOfMethodCallIgnored
-            intent.putExtra(EXTRA_ERROR, result.getError());
+            if (result != null) {
+                //noinspection ThrowableResultOfMethodCallIgnored
+                intent.putExtra(EXTRA_ERROR, result.getError());
+            }
             setResult(RESULT_ERROR, intent);
             finish();
         }
@@ -252,8 +258,7 @@ public class SelectImageActivity extends AppCompatActivity
 
     private void crop(@NonNull Uri uri) {
         File file = ContextUtil.createTempFile(this, "photo", ".jpg", CACHE_DIR);
-        Intent intent = new Intent();
-        intent.setClass(this, CropImageActivity.class);
+        Intent intent = new Intent(this, CropImageActivity.class);
         intent.putExtra(CropImage.CROP_IMAGE_EXTRA_SOURCE, uri);
         mOptions.outputUri = Uri.fromFile(file);
         intent.putExtra(CropImage.CROP_IMAGE_EXTRA_OPTIONS, mOptions);
@@ -273,8 +278,11 @@ public class SelectImageActivity extends AppCompatActivity
         }
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
-        Intent i = Intent.createChooser(intent, null);
-        startActivityForResult(i, REQUEST_CODE_IMAGE_PICK);
+        List<ResolveInfo> resInfoList = getPackageManager()
+                .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        if (resInfoList.size() > 0) {
+            startActivityForResult(intent, REQUEST_CODE_IMAGE_PICK);
+        }
     }
 
     /**
