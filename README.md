@@ -7,7 +7,7 @@ Select a photo activity for android by stock camera or photos
 This library already included in JCenter & MavenCentral
 #### Gradle:
 ```groovy
-compile 'org.ligboy.android:selectphoto:1.0.0'
+compile 'org.ligboy.android:selectphoto:1.0.1'
 ```
 
 ### Usage
@@ -29,8 +29,10 @@ compile 'org.ligboy.android:selectphoto:1.0.0'
 
 ```java
     SelectImageActivity.builder()
-            .asSquare() // with aspect ratio: 1:1
-            .withCrop(true) //with crop function
+            .asSquare()
+            .setFixAspectRatio(true)
+            .withMaxSize(1024, 1024)
+            .withCrop(true)
             .start(MainActivity.this);
 ```
 OnActivityResult:
