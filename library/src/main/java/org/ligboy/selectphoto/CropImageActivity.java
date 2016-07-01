@@ -120,6 +120,10 @@ public final class CropImageActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.crop_image_menu_crop) {
+            cropImage();
+            return true;
+        }
         if (item.getItemId() == R.id.crop_image_menu_rotate_left) {
             rotateImage(-mOptions.rotationDegrees);
             return true;
